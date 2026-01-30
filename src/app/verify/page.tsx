@@ -1,18 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useVerifyEmail } from '@/hooks/useVerifyEmail';
 
 export default function VerifyPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
-  useEffect(() => {
-    if (token) {
-      // Redirect to backend for verification
-      window.location.href = `http://localhost:8081/api/v1/identity/confirm-registration?token=${encodeURIComponent(token)}`;
-    }
-  }, [token]);
+  useVerifyEmail(token);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

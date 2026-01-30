@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Eye, EyeOff, CheckCircle, AlertTriangle } from "lucide-react";
 import { ValidatedInput } from "./ValidatedInput";
 import { useSignUp } from "@/hooks/useSignUp";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -22,17 +22,6 @@ export function SignUpForm() {
 
   const { signUp, isLoading } = useSignUp();
 
-  // Real-time password match validation
-  useEffect(() => {
-    if (confirmPassword && password !== confirmPassword) {
-      setConfirmError("Passwords do not match");
-    } else if (confirmPassword) {
-      setConfirmError("");
-    } else {
-      setConfirmError(""); // Clear if confirm is empty
-    }
-  }, [password, confirmPassword]);
-
   const handleEmailChange = (value: string, isValid: boolean) => {
     setEmail(value);
     setEmailError(''); // Clear server error
@@ -42,12 +31,26 @@ export function SignUpForm() {
   const handlePasswordChange = (value: string, isValid: boolean) => {
     setPassword(value);
     setPasswordError(''); // Clear server error
+    if (confirmPassword && value !== confirmPassword) {
+      setConfirmError("Passwords do not match");
+    } else if (confirmPassword) {
+      setConfirmError("");
+    } else {
+      setConfirmError("");
+    }
     updateFormValidity(email, value, confirmPassword, isValid && !!email && !!confirmPassword && confirmPassword === value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   };
 
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setConfirmPassword(value);
+    if (value && password !== value) {
+      setConfirmError("Passwords do not match");
+    } else if (value) {
+      setConfirmError("");
+    } else {
+      setConfirmError("");
+    }
     updateFormValidity(email, password, value, !!email && !!password && !!value && value === password && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && password.length >= 8);
   };
 

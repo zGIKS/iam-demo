@@ -76,6 +76,7 @@
   --accent: var(--base-100);
   --accent-foreground: var(--base-800);
   --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.577 0.245 142.495);
   --border: var(--base-200);
   --input: var(--base-300);
   --ring: var(--base-800);
@@ -115,6 +116,7 @@
   --accent: var(--base-800);
   --accent-foreground: var(--base-200);
   --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.704 0.191 142.495);
   --border: var(--base-800);
   --input: var(--base-700);
   --ring: var(--base-200);

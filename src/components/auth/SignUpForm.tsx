@@ -6,6 +6,7 @@ import { Eye, EyeOff, CheckCircle, AlertTriangle } from "lucide-react";
 import { ValidatedInput } from "./ValidatedInput";
 import { useSignUp } from "@/hooks/useSignUp";
 import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -137,20 +138,24 @@ export function SignUpForm() {
         {confirmError && <p className="text-sm text-destructive">{confirmError}</p>}
       </div>
       <Button type="submit" className="w-full mt-4" disabled={!isFormValid || isLoading}>
-        {isLoading ? 'Creating account...' : 'Sign up'}
+        {isLoading ? (
+          <Spinner aria-label="Creating account" />
+        ) : (
+          'Sign up'
+        )}
       </Button>
       </form>
       {showErrorNotification && (
         <Alert
-          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
+          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-destructive/10 border-destructive/20 dark:bg-destructive/20 dark:border-destructive/30 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
         >
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertTriangle className="h-4 w-4 text-destructive" />
             <div className="flex flex-col gap-0 leading-tight">
-              <AlertTitle className="text-red-800 dark:text-red-200 text-xs sm:text-sm">
+              <AlertTitle className="text-destructive text-xs sm:text-sm">
                 Error
               </AlertTitle>
-              <AlertDescription className="text-red-700 dark:text-red-300 text-xs sm:text-sm leading-tight">
+              <AlertDescription className="text-destructive/80 text-xs sm:text-sm leading-tight">
                 {errorMessage}
               </AlertDescription>
             </div>
@@ -159,15 +164,15 @@ export function SignUpForm() {
       )}
       {showNotification && (
         <Alert
-          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
+          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-success/10 border-success/20 dark:bg-success/20 dark:border-success/30 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
         >
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4 text-success" />
             <div className="flex flex-col gap-0 leading-tight">
-              <AlertTitle className="text-green-800 dark:text-green-200 text-xs sm:text-sm">
+              <AlertTitle className="text-success text-xs sm:text-sm">
                 Success
               </AlertTitle>
-              <AlertDescription className="text-green-700 dark:text-green-300 text-xs sm:text-sm leading-tight">
+              <AlertDescription className="text-success/80 text-xs sm:text-sm leading-tight">
                 Account created successfully! Please sign in.
               </AlertDescription>
             </div>

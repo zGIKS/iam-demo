@@ -1,9 +1,11 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { useVerifyEmail } from '@/hooks/useVerifyEmail';
+import { Spinner } from '@/components/ui/spinner';
 
-export default function VerifyPage() {
+function VerifyContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
@@ -16,5 +18,17 @@ export default function VerifyPage() {
         <p>Redirecting to verification...</p>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Spinner aria-label="Loading" />
+      </div>
+    }>
+      <VerifyContent />
+    </Suspense>
   );
 }

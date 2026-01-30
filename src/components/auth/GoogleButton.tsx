@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 
 export function GoogleButton() {
@@ -31,7 +32,14 @@ export function GoogleButton() {
           />
         </svg>
       </span>
-      {isRedirecting ? 'Redirecting to Google...' : 'Continue with Google'}
+      {isRedirecting ? (
+        <>
+          <Spinner />
+          Loading
+        </>
+      ) : (
+        'Continue with Google'
+      )}
     </Button>
   );
 }

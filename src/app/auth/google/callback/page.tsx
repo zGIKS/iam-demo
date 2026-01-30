@@ -40,12 +40,7 @@ export default function GoogleCallbackPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
-      <p className="text-base font-semibold">Procesando inicio de sesión con Google...</p>
-      {isLoading ? (
-        <Spinner className="h-6 w-6 text-primary" />
-      ) : (
-        <p>{error || "Estamos redirigiendo..."}</p>
-      )}
+      <Spinner className="h-6 w-6 text-primary" aria-label="redirect" />
     </div>
   );
 }

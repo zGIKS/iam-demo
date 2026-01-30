@@ -1,10 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import { ValidatedInput } from "./ValidatedInput";
 import { useSignUp } from "@/hooks/useSignUp";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -15,8 +16,20 @@ export function SignUpForm() {
   const [confirmError, setConfirmError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
 
   const { signUp, isLoading } = useSignUp();
+
+  // Real-time password match validation
+  useEffect(() => {
+    if (confirmPassword && password !== confirmPassword) {
+      setConfirmError("Passwords do not match");
+    } else if (confirmPassword) {
+      setConfirmError("");
+    } else {
+      setConfirmError(""); // Clear if confirm is empty
+    }
+  }, [password, confirmPassword]);
 
   const handleEmailChange = (value: string, isValid: boolean) => {
     setEmail(value);
@@ -33,11 +46,6 @@ export function SignUpForm() {
   const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setConfirmPassword(value);
-    if (value !== password) {
-      setConfirmError("Passwords do not match");
-    } else {
-      setConfirmError("");
-    }
     updateFormValidity(email, password, value, !!email && !!password && !!value && value === password && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && password.length >= 8);
   };
 
@@ -56,11 +64,13 @@ export function SignUpForm() {
     const result = await signUp({ email, password });
 
     if (result.success) {
-      alert('Account created successfully! Please sign in.');
+      setShowNotification(true);
       // Reset form
       setEmail('');
       setPassword('');
       setConfirmPassword('');
+      // Hide notification after 5 seconds
+      setTimeout(() => setShowNotification(false), 5000);
     } else {
       // Handle specific errors if needed
       setConfirmError(result.error || 'An error occurred');
@@ -68,7 +78,8 @@ export function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-3">
       <ValidatedInput
         id="email"
         name="email"
@@ -117,6 +128,24 @@ export function SignUpForm() {
       <Button type="submit" className="w-full mt-4" disabled={!isFormValid || isLoading}>
         {isLoading ? 'Creating account...' : 'Sign up'}
       </Button>
-    </form>
+      </form>
+      {showNotification && (
+        <Alert
+          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
+        >
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <div className="flex flex-col gap-0 leading-tight">
+              <AlertTitle className="text-green-800 dark:text-green-200 text-xs sm:text-sm">
+                Success
+              </AlertTitle>
+              <AlertDescription className="text-green-700 dark:text-green-300 text-xs sm:text-sm leading-tight">
+                Account created successfully! Please sign in.
+              </AlertDescription>
+            </div>
+          </div>
+        </Alert>
+      )}
+    </>
   );
 }

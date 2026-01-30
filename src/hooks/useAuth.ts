@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { verifyService } from '@/services/iam/auth-verify.service';
 import { refreshTokenService } from '@/services/iam/auth-refresh.service';
+import { logoutService } from '@/services/iam/auth-logout.service';
 import { getTokenFromCookie, getRefreshTokenFromCookie, clearAuthCookies } from '@/lib/auth';
 import { ROUTE_PATHS } from '@/lib/paths';
 
@@ -13,7 +14,7 @@ interface UseAuthReturn {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
 
@@ -22,10 +23,22 @@ export function useAuth(): UseAuthReturn {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const logout = useCallback(() => {
-    clearAuthCookies();
-    setUser(null);
-    router.push(ROUTE_PATHS.signIn);
+  const logout = useCallback(async () => {
+    try {
+      const refreshToken = getRefreshTokenFromCookie();
+      if (refreshToken) {
+        // Call backend logout endpoint
+        await logoutService.logout(refreshToken);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue with local logout even if backend call fails
+    } finally {
+      // Always clear local cookies and redirect
+      clearAuthCookies();
+      setUser(null);
+      router.push(ROUTE_PATHS.signIn);
+    }
   }, [router]);
 
   const refreshAuth = useCallback(async () => {
@@ -47,13 +60,13 @@ export function useAuth(): UseAuthReturn {
               if (newVerifyResult?.is_valid && newVerifyResult.sub) {
                 setUser({ id: newVerifyResult.sub });
               } else {
-                logout();
+                await logout();
               }
             } else {
-              logout();
+              await logout();
             }
           } else {
-            logout();
+            await logout();
           }
         }
       } else {
@@ -61,7 +74,7 @@ export function useAuth(): UseAuthReturn {
       }
     } catch (error) {
       console.error('Auth refresh error:', error);
-      logout();
+      await logout();
     } finally {
       setIsLoading(false);
     }

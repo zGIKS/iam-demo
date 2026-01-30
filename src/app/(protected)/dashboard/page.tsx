@@ -34,7 +34,7 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             <p>Hello! You are successfully authenticated.</p>
             {user && <p>User ID: {user.id}</p>}
-            <Button onClick={logout} variant="outline">
+            <Button onClick={() => logout()} variant="outline">
               Logout
             </Button>
           </CardContent>

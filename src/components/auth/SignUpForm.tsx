@@ -173,7 +173,7 @@ export function SignUpForm() {
                 Success
               </AlertTitle>
               <AlertDescription className="text-success/80 text-xs sm:text-sm leading-tight">
-                Account created successfully! Please sign in.
+                Account created successfully! Please check your email to verify your account.
               </AlertDescription>
             </div>
           </div>

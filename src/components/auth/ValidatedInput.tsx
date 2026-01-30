@@ -32,7 +32,7 @@ export function ValidatedInput({
   const [touched, setTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const sanitizeValue = (val: string) => val.trim().slice(0, maxLength);
+  const sanitizeValue = (val: string) => val.replace(/\s/g, '').slice(0, maxLength);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

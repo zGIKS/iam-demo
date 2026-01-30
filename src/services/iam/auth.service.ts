@@ -206,4 +206,94 @@ export const authService = {
       }
     }
   },
+
+  async confirmRegistration(token: string): Promise<AuthResult> {
+    try {
+      // Validate token
+      if (!token || !token.trim()) {
+        return {
+          success: false,
+          message: 'Verification token is required',
+        };
+      }
+
+      // Check if API is configured
+      if (!isApiConfigured()) {
+        return {
+          success: false,
+          message: 'API configuration missing. Please set NEXT_PUBLIC_API_URL in your environment.',
+        };
+      }
+
+      // Call external API for email confirmation
+      const response = await axiosConfig.get('/api/v1/identity/confirm-registration', {
+        params: { token },
+      });
+
+      // Validate response structure
+      if (!response.data || typeof response.data !== 'object') {
+        console.error('Invalid API response structure');
+        return {
+          success: false,
+          message: 'Invalid response from server',
+        };
+      }
+
+      console.log('Email verification successful');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: unknown) {
+      console.error('Email verification service error:', error);
+
+      // Type guard for AxiosError
+      const isAxiosError = (err: unknown): err is AxiosError => {
+        return (err as AxiosError).response !== undefined;
+      };
+
+      // Handle different error types
+      if (isAxiosError(error) && error.response) {
+        const { status, data } = error.response;
+        const errorData = data as ApiErrorData;
+        if (status === 400) {
+          return {
+            success: false,
+            message: errorData?.message || 'Invalid verification token',
+          };
+        } else if (status === 404) {
+          return {
+            success: false,
+            message: errorData?.message || 'Verification endpoint not found. Check API configuration.',
+          };
+        } else if (status === 410) {
+          return {
+            success: false,
+            message: errorData?.message || 'Verification token has expired',
+          };
+        } else if (status >= 500) {
+          return {
+            success: false,
+            message: 'Server error. Please try again later.',
+          };
+        } else {
+          return {
+            success: false,
+            message: errorData?.message || `Request failed with status ${status}`,
+          };
+        }
+      } else if (isAxiosError(error) && error.request) {
+        return {
+          success: false,
+          message: 'Network error. Check your connection and try again.',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'An unexpected error occurred. Please try again.',
+        };
+      }
+    }
+  },
 };

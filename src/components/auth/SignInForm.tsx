@@ -34,8 +34,7 @@ export function SignInForm() {
     const result = await signIn({ email, password });
 
     if (result.success) {
-      // Redirect to dashboard or home
-      window.location.href = '/';
+      // Redirect handled by useSignIn hook
     } else {
       setShowErrorNotification(true);
       setErrorMessage(result.error || 'Sign in failed');

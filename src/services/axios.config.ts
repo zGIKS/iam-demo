@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { getTokenFromCookie } from '@/lib/auth';
 
 // Axios configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -14,9 +15,11 @@ const axiosConfig: AxiosInstance = axios.create({
 // Request interceptor
 axiosConfig.interceptors.request.use(
   (config) => {
-    // Add any request headers here
-    // For example, authorization tokens
-    // config.headers.Authorization = `Bearer ${token}`;
+    // Add authorization token if available
+    const token = getTokenFromCookie();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

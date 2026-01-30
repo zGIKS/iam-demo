@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Asphanyx - Authentication Service",
-  description: "Secure authentication system for Asphanyx",
+  title: "Asphanyx",
+  description: "Secure authentication system Auth made easy.",
 };
 
 export default function RootLayout({

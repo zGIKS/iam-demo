@@ -23,6 +23,25 @@ export const API_PATHS = {
   resetPassword: '/api/v1/identity/reset-password',
 } as const;
 
+// Frontend route paths
+export const ROUTE_PATHS = {
+  // Public routes
+  home: '/',
+  signIn: '/sign-in',
+  signUp: '/sign-up',
+  verify: '/verify',
+  emailVerified: '/email-verified',
+  emailVerificationFailed: '/email-verification-failed',
+
+  // Protected routes
+  dashboard: '/dashboard',
+} as const;
+
+// Protected route patterns for middleware
+export const PROTECTED_ROUTE_PATTERNS = [
+  ROUTE_PATHS.dashboard,
+] as const;
+
 // Helper to build full URLs
 export const buildApiUrl = (path: string): string => {
   if (!API_BASE_URL) {

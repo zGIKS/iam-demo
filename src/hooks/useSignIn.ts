@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signInService } from '@/services/iam/auth-signin.service';
+import { ROUTE_PATHS } from '@/lib/paths';
 
 interface SignInData {
   email: string;
@@ -14,26 +17,21 @@ interface UseSignInReturn {
 export function useSignIn(): UseSignInReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const signIn = async (data: SignInData) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/auth/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const result = await signInService.signIn(data);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
+        // Redirect to dashboard
+        router.push(ROUTE_PATHS.dashboard);
         return { success: true };
       } else {
-        const errorMessage = result.error || 'Invalid credentials';
+        const errorMessage = result.message || 'Invalid credentials';
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import axiosConfig from '../axios.config';
+import { setTokenCookie, setRefreshTokenCookie } from '@/lib/auth';
 
 export interface SignInData {
   email: string;
@@ -54,6 +55,14 @@ export const signInService = {
       }
 
       console.log('Sign in successful for:', data.email);
+
+      // Set auth cookies
+      if (response.data.token) {
+        setTokenCookie(response.data.token);
+      }
+      if (response.data.refresh_token) {
+        setRefreshTokenCookie(response.data.refresh_token);
+      }
 
       return {
         success: true,

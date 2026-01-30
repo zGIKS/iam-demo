@@ -29,8 +29,6 @@ export const buildApiUrl = (path: string): string => {
     throw new Error('API base URL is not configured');
   }
 
-  const normalizedBase = API_BASE_URL.replace(/\/+/g, '/').replace(/\/$/, '');
-  const normalizedPath = `/${path.replace(/^\/+/, '')}`;
-
-  return `${normalizedBase}${normalizedPath}`;
+  const url = new URL(path, API_BASE_URL);
+  return url.toString();
 };

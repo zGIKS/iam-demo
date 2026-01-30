@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 
 export function GoogleButton() {
+  const { startGoogleLogin, isRedirecting } = useGoogleLogin();
+
   return (
-    <Button type="button" className="w-full">
+    <Button
+      type="button"
+      className="w-full"
+      onClick={startGoogleLogin}
+      disabled={isRedirecting}
+    >
       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-inner">
         <svg viewBox="0 0 46 46" className="h-4 w-4" aria-hidden="true">
           <path
@@ -23,7 +32,14 @@ export function GoogleButton() {
           />
         </svg>
       </span>
-      Continue with Google
+      {isRedirecting ? (
+        <>
+          <Spinner />
+          Loading
+        </>
+      ) : (
+        'Continue with Google'
+      )}
     </Button>
   );
 }

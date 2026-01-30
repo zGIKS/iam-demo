@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { useGoogleAuthClaim } from "@/hooks/useGoogleAuthClaim";
 import { ROUTE_PATHS } from "@/lib/paths";
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
   const router = useRouter();
-  const { claimCode, isLoading, error } = useGoogleAuthClaim();
+  const { claimCode } = useGoogleAuthClaim();
 
   useEffect(() => {
     if (!code) {
@@ -42,5 +42,21 @@ export default function GoogleCallbackPage() {
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
       <Spinner className="h-6 w-6 text-primary" aria-label="redirect" />
     </div>
+  );
+}
+
+function GoogleCallbackFallback() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
+      <Spinner className="h-6 w-6 text-primary" aria-label="Loading..." />
+    </div>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense fallback={<GoogleCallbackFallback />}>
+      <GoogleCallbackContent />
+    </Suspense>
   );
 }

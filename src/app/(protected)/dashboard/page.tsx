@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function DashboardPage() {
-  const { user, isLoading, logout, isAuthenticated } = useAuth();
+  const { isLoading, logout, isAuthenticated } = useAuth();
 
   if (isLoading) {
     return (
@@ -33,7 +33,6 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p>Hello! You are successfully authenticated.</p>
-            {user && <p>User ID: {user.id}</p>}
             <Button onClick={() => logout()} variant="outline">
               Logout
             </Button>

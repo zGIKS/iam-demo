@@ -14,6 +14,7 @@ interface ValidatedInputProps {
   required?: boolean;
   label: string;
   maxLength?: number;
+  disabled?: boolean;
   onValueChange?: (value: string, isValid: boolean) => void;
 }
 
@@ -25,6 +26,7 @@ export function ValidatedInput({
   required = false,
   label,
   maxLength = type === "email" ? 254 : 128,
+  disabled = false,
   onValueChange,
 }: ValidatedInputProps) {
   const [value, setValue] = useState("");
@@ -95,13 +97,14 @@ export function ValidatedInput({
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={(e) => {
-            if ((type === "email" || type === "password") && e.key === ' ') {
+            if (type === "email" && e.key === ' ') {
               e.preventDefault();
             }
           }}
           required={required}
           className={`pr-10 ${error ? "border-destructive" : ""}`}
           maxLength={maxLength}
+          disabled={disabled}
         />
         {type === "password" && (
           <Button

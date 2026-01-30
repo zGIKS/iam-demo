@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { Suspense, useEffect, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Background } from '@/components/ui/background';
 import { AuthHeader } from '@/components/auth/AuthHeader';
@@ -13,7 +13,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTE_PATHS } from '@/lib/paths';
 import { useResetPassword } from '@/hooks/useResetPassword';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -172,5 +172,31 @@ export default function ResetPasswordPage() {
         </Alert>
       )}
     </Background>
+  );
+}
+
+function ResetPasswordFallback() {
+  return (
+    <Background>
+      <div className="w-full max-w-sm space-y-4">
+        <AuthHeader
+          title="New Password"
+          subtitle="You can close this window after saving and sign in again."
+        />
+        <Card>
+          <CardContent className="flex items-center justify-center py-8">
+            <Spinner aria-label="Loading..." />
+          </CardContent>
+        </Card>
+      </div>
+    </Background>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordFallback />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

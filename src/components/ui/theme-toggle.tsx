@@ -2,14 +2,21 @@
 
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === 'undefined') return true;
+  const [isDark, setIsDark] = useState(true); // Default to dark
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
     const stored = localStorage.getItem('theme');
-    return stored === 'dark' || stored === null;
-  });
+    if (stored === 'light') {
+      setIsDark(false);
+    } else {
+      setIsDark(true);
+    }
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useLayoutEffect(() => {
     const root = document.documentElement;

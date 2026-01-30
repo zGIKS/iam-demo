@@ -97,7 +97,7 @@ export function ValidatedInput({
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={(e) => {
-            if ((type === "email" || type === "password") && e.key === ' ') {
+            if (type === "email" && e.key === ' ') {
               e.preventDefault();
             }
           }}

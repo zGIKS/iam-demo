@@ -66,12 +66,9 @@ export function SignInForm() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => {
-                const value = e.target.value.replace(/\s/g, '');
+                const value = e.target.value;
                 setPassword(value);
                 updateFormValidity(email, value, !!email && !!value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && value.length >= 8);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === ' ') e.preventDefault();
               }}
               required
               className="pr-10"

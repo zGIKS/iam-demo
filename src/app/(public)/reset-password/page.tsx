@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { ValidatedInput } from '@/components/auth/ValidatedInput';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTE_PATHS } from '@/lib/paths';
 import { useResetPassword } from '@/hooks/useResetPassword';
@@ -23,6 +23,8 @@ export default function ResetPasswordPage() {
   const [passwordValid, setPasswordValid] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const { resetPassword, status, message } = useResetPassword();
 
@@ -39,15 +41,21 @@ export default function ResetPasswordPage() {
     }
   }, [isSuccess, router]);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (status === 'error' && message) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrorMessage(message);
       setShowErrorNotification(true);
       const timer = setTimeout(() => setShowErrorNotification(false), 5000);
       return () => clearTimeout(timer);
+    } else if (status === 'success' && message) {
+      setSuccessMessage(message);
+      setShowSuccessNotification(true);
+      const timer = setTimeout(() => setShowSuccessNotification(false), 5000);
+      return () => clearTimeout(timer);
     }
   }, [status, message]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,12 +97,6 @@ export default function ResetPasswordPage() {
                 <AlertDescription>
                   The link you are using has no token or has expired. Request another from the recovery form.
                 </AlertDescription>
-              </Alert>
-            )}
-
-            {message && status !== 'error' && (
-              <Alert variant="default">
-                <AlertDescription>{message}</AlertDescription>
               </Alert>
             )}
 
@@ -148,6 +150,22 @@ export default function ResetPasswordPage() {
               </AlertTitle>
               <AlertDescription className="text-destructive/80 text-xs sm:text-sm leading-tight">
                 {errorMessage}
+              </AlertDescription>
+            </div>
+          </div>
+        </Alert>
+      )}
+
+      {showSuccessNotification && (
+        <Alert variant="default" className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            <div className="flex flex-col gap-0 leading-tight">
+              <AlertTitle className="text-xs sm:text-sm">
+                Success
+              </AlertTitle>
+              <AlertDescription className="text-xs sm:text-sm leading-tight">
+                {successMessage}
               </AlertDescription>
             </div>
           </div>

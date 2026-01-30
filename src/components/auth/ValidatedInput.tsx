@@ -94,6 +94,11 @@ export function ValidatedInput({
           value={value}
           onChange={handleChange}
           onBlur={handleBlur}
+          onKeyDown={(e) => {
+            if ((type === "email" || type === "password") && e.key === ' ') {
+              e.preventDefault();
+            }
+          }}
           required={required}
           className={`pr-10 ${error ? "border-destructive" : ""}`}
           maxLength={maxLength}

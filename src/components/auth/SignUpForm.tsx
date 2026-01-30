@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, AlertTriangle } from "lucide-react";
 import { ValidatedInput } from "./ValidatedInput";
 import { useSignUp } from "@/hooks/useSignUp";
 import { useState, useEffect } from "react";
@@ -17,6 +17,8 @@ export function SignUpForm() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showNotification, setShowNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { signUp, isLoading } = useSignUp();
 
@@ -73,7 +75,10 @@ export function SignUpForm() {
       setTimeout(() => setShowNotification(false), 5000);
     } else {
       // Handle specific errors if needed
-      setConfirmError(result.error || 'An error occurred');
+      setShowErrorNotification(true);
+      setErrorMessage(result.error || 'An error occurred');
+      // Hide error notification after 5 seconds
+      setTimeout(() => setShowErrorNotification(false), 5000);
     }
   };
 
@@ -110,6 +115,9 @@ export function SignUpForm() {
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
+            onKeyDown={(e) => {
+              if (e.key === ' ') e.preventDefault();
+            }}
             required
             className={`pr-10 ${confirmError ? "border-destructive" : ""}`}
           />
@@ -129,6 +137,23 @@ export function SignUpForm() {
         {isLoading ? 'Creating account...' : 'Sign up'}
       </Button>
       </form>
+      {showErrorNotification && (
+        <Alert
+          className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"
+        >
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <div className="flex flex-col gap-0 leading-tight">
+              <AlertTitle className="text-red-800 dark:text-red-200 text-xs sm:text-sm">
+                Error
+              </AlertTitle>
+              <AlertDescription className="text-red-700 dark:text-red-300 text-xs sm:text-sm leading-tight">
+                {errorMessage}
+              </AlertDescription>
+            </div>
+          </div>
+        </Alert>
+      )}
       {showNotification && (
         <Alert
           className="fixed top-4 right-4 z-50 w-full max-w-xs px-3 py-1 text-xs shadow-lg bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800 sm:max-w-sm sm:px-2.5 sm:py-1.5 sm:text-sm sm:right-4 md:right-6 lg:right-8 xl:right-10"

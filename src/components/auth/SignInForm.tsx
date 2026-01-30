@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import Link from "next/link";
 
 export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -94,6 +95,11 @@ export function SignInForm() {
             'Sign in'
           )}
         </Button>
+        <div className="text-right">
+          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+            Forgot your password?
+          </Link>
+        </div>
       </form>
 
       {showErrorNotification && (

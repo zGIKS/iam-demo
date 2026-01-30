@@ -10,7 +10,7 @@ export default function GoogleCallbackPage() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
   const router = useRouter();
-  const { claimCode, isLoading, error } = useGoogleAuthClaim();
+  const { claimCode } = useGoogleAuthClaim();
 
   useEffect(() => {
     if (!code) {

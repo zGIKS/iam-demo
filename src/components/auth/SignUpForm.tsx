@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { ValidatedInput } from "./ValidatedInput";
+import { useSignUp } from "@/hooks/useSignUp";
 import { useState } from "react";
 
 export function SignUpForm() {
@@ -12,14 +13,20 @@ export function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmError, setConfirmError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const { signUp, isLoading } = useSignUp();
 
   const handleEmailChange = (value: string, isValid: boolean) => {
     setEmail(value);
+    setEmailError(''); // Clear server error
     updateFormValidity(value, password, confirmPassword, isValid && !!password && !!confirmPassword && confirmPassword === password && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value));
   };
 
   const handlePasswordChange = (value: string, isValid: boolean) => {
     setPassword(value);
+    setPasswordError(''); // Clear server error
     updateFormValidity(email, value, confirmPassword, isValid && !!email && !!confirmPassword && confirmPassword === value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   };
 
@@ -38,11 +45,25 @@ export function SignUpForm() {
     setIsFormValid(valid);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isFormValid) {
-      // Handle sign up logic here
-      console.log("Signing up with", email, password);
+    if (!isFormValid) return;
+
+    setConfirmError('');
+    setEmailError('');
+    setPasswordError('');
+
+    const result = await signUp({ email, password });
+
+    if (result.success) {
+      alert('Account created successfully! Please sign in.');
+      // Reset form
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+    } else {
+      // Handle specific errors if needed
+      setConfirmError(result.error || 'An error occurred');
     }
   };
 
@@ -57,6 +78,7 @@ export function SignUpForm() {
         required
         onValueChange={handleEmailChange}
       />
+      {emailError && <p className="text-sm text-destructive mt-1">{emailError}</p>}
       <ValidatedInput
         id="password"
         name="password"
@@ -66,6 +88,7 @@ export function SignUpForm() {
         required
         onValueChange={handlePasswordChange}
       />
+      {passwordError && <p className="text-sm text-destructive mt-1">{passwordError}</p>}
       <div className="space-y-1">
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <div className="relative">
@@ -91,8 +114,8 @@ export function SignUpForm() {
         </div>
         {confirmError && <p className="text-sm text-destructive">{confirmError}</p>}
       </div>
-      <Button type="submit" className="w-full mt-4" disabled={!isFormValid}>
-        Sign up
+      <Button type="submit" className="w-full mt-4" disabled={!isFormValid || isLoading}>
+        {isLoading ? 'Creating account...' : 'Sign up'}
       </Button>
     </form>
   );

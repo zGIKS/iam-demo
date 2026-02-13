@@ -28,13 +28,12 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              const theme = localStorage.getItem('theme');
-              if (theme === 'dark' || theme === null) {
-                document.documentElement.classList.add('dark');
-                document.documentElement.style.colorScheme = 'dark';
-              } else {
-                document.documentElement.style.colorScheme = 'light';
-              }
+              const stored = localStorage.getItem('theme');
+              const isDark = stored
+                ? stored === 'dark'
+                : window.matchMedia('(prefers-color-scheme: dark)').matches;
+              document.documentElement.classList.toggle('dark', isDark);
+              document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
             `,
           }}
         />

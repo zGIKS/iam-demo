@@ -9,12 +9,9 @@ export function ThemeToggle() {
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    if (stored === 'light') {
-      setIsDark(false);
-    } else {
-      setIsDark(true);
-    }
+    const stored = localStorage.getItem("theme");
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setIsDark(stored ? stored === "dark" : systemDark);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 

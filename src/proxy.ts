@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getTokenFromServerCookie } from '@/lib/auth';
+import { TOKEN_COOKIE_NAME } from '@/lib/auth';
 
 export async function proxy(request: NextRequest) {
   // Get the token from cookies
-  const token = getTokenFromServerCookie(request);
+  const token = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
 
   // Routes that require protection
   const protectedPaths = ['/dashboard'];
@@ -20,7 +20,15 @@ export async function proxy(request: NextRequest) {
 
     // Optional: Verify token with backend
     try {
-      const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/verify?token=${token}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+      if (!apiUrl) {
+        return NextResponse.redirect(new URL('/sign-in', request.url));
+      }
+
+      const verifyUrl = new URL('/api/v1/auth/verify', apiUrl);
+      verifyUrl.searchParams.set('token', token);
+
+      const verifyRes = await fetch(verifyUrl.toString(), {
         method: 'GET',
       });
 

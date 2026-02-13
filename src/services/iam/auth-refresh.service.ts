@@ -9,6 +9,31 @@ export interface RefreshResult {
   message?: string;
 }
 
+interface AuthTokenPayload {
+  token?: string;
+  refresh_token?: string;
+}
+
+const extractAuthTokens = (payload: unknown): AuthTokenPayload => {
+  if (!payload || typeof payload !== 'object') return {};
+  const root = payload as Record<string, unknown>;
+
+  const token = typeof root.token === 'string' ? root.token : undefined;
+  const refreshToken = typeof root.refresh_token === 'string' ? root.refresh_token : undefined;
+  if (token || refreshToken) {
+    return { token, refresh_token: refreshToken };
+  }
+
+  const nested = root.data;
+  if (!nested || typeof nested !== 'object') return {};
+  const nestedObj = nested as Record<string, unknown>;
+
+  return {
+    token: typeof nestedObj.token === 'string' ? nestedObj.token : undefined,
+    refresh_token: typeof nestedObj.refresh_token === 'string' ? nestedObj.refresh_token : undefined,
+  };
+};
+
 export const refreshTokenService = {
   async refreshToken(refreshToken: string): Promise<RefreshResult> {
     try {
@@ -17,17 +42,18 @@ export const refreshTokenService = {
       });
 
       // Update cookies with new tokens
-      if (response.data.token) {
-        setTokenCookie(response.data.token);
+      const tokens = extractAuthTokens(response.data);
+      if (tokens.token) {
+        setTokenCookie(tokens.token);
       }
-      if (response.data.refresh_token) {
-        setRefreshTokenCookie(response.data.refresh_token);
+      if (tokens.refresh_token) {
+        setRefreshTokenCookie(tokens.refresh_token);
       }
 
       return {
         success: true,
-        token: response.data.token,
-        refresh_token: response.data.refresh_token,
+        token: tokens.token,
+        refresh_token: tokens.refresh_token,
       };
     } catch (error: unknown) {
       console.error('Refresh token service error:', error);

@@ -12,6 +12,31 @@ export interface AuthResult {
   message?: string;
 }
 
+interface AuthTokenPayload {
+  token?: string;
+  refresh_token?: string;
+}
+
+const extractAuthTokens = (payload: unknown): AuthTokenPayload => {
+  if (!payload || typeof payload !== 'object') return {};
+  const root = payload as Record<string, unknown>;
+
+  const token = typeof root.token === 'string' ? root.token : undefined;
+  const refreshToken = typeof root.refresh_token === 'string' ? root.refresh_token : undefined;
+  if (token || refreshToken) {
+    return { token, refresh_token: refreshToken };
+  }
+
+  const nested = root.data;
+  if (!nested || typeof nested !== 'object') return {};
+  const nestedObj = nested as Record<string, unknown>;
+
+  return {
+    token: typeof nestedObj.token === 'string' ? nestedObj.token : undefined,
+    refresh_token: typeof nestedObj.refresh_token === 'string' ? nestedObj.refresh_token : undefined,
+  };
+};
+
 const isApiConfigured = (): boolean => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   return !!(apiUrl && apiUrl.trim());
@@ -54,11 +79,12 @@ export const googleAuthService = {
     try {
       const response = await axiosConfig.post('/api/v1/auth/google/claim', payload);
 
-      if (response.data?.token) {
-        setTokenCookie(response.data.token);
+      const tokens = extractAuthTokens(response.data);
+      if (tokens.token) {
+        setTokenCookie(tokens.token);
       }
-      if (response.data?.refresh_token) {
-        setRefreshTokenCookie(response.data.refresh_token);
+      if (tokens.refresh_token) {
+        setRefreshTokenCookie(tokens.refresh_token);
       }
 
       return {

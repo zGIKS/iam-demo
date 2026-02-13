@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { buildApiUrl, API_PATHS } from '@/lib/paths';
 
 interface SignUpData {
   email: string;
@@ -22,7 +23,7 @@ export function useSignUp(): UseSignUpReturn {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/auth/sign-up', {
+      const response = await fetch(buildApiUrl(API_PATHS.signUp), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

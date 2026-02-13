@@ -42,7 +42,7 @@ export const signUpService = {
       }
 
       // Call external API for sign up
-      const response = await axiosConfig.post('/api/v1/auth/sign-up', data);
+      const response = await axiosConfig.post('/api/v1/identity/sign-up', data);
 
       // Validate response structure
       if (!response.data || typeof response.data !== 'object') {

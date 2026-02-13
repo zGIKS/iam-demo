@@ -31,6 +31,9 @@ export default function RootLayout({
               const theme = localStorage.getItem('theme');
               if (theme === 'dark' || theme === null) {
                 document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+              } else {
+                document.documentElement.style.colorScheme = 'light';
               }
             `,
           }}

@@ -6,26 +6,34 @@ export const getTokenFromCookie = (): string | null => {
   if (typeof document === 'undefined') return null;
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${TOKEN_COOKIE_NAME}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  if (parts.length === 2) {
+    const token = parts.pop()?.split(';').shift() || null;
+    return token ? decodeURIComponent(token) : null;
+  }
   return null;
 };
 
 export const setTokenCookie = (token: string, maxAge: number = 3600) => {
   if (typeof document === 'undefined') return;
-  document.cookie = `${TOKEN_COOKIE_NAME}=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${TOKEN_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
 };
 
 export const getRefreshTokenFromCookie = (): string | null => {
   if (typeof document === 'undefined') return null;
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${REFRESH_TOKEN_COOKIE_NAME}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  if (parts.length === 2) {
+    const refreshToken = parts.pop()?.split(';').shift() || null;
+    return refreshToken ? decodeURIComponent(refreshToken) : null;
+  }
   return null;
 };
 
 export const setRefreshTokenCookie = (refreshToken: string, maxAge: number = 86400 * 7) => {
   if (typeof document === 'undefined') return;
-  document.cookie = `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${REFRESH_TOKEN_COOKIE_NAME}=${encodeURIComponent(refreshToken)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
 };
 
 export const clearAuthCookies = () => {
@@ -40,7 +48,10 @@ export const getTokenFromServerCookie = (request: Request): string | null => {
   if (!cookieHeader) return null;
   const value = `; ${cookieHeader}`;
   const parts = value.split(`; ${TOKEN_COOKIE_NAME}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  if (parts.length === 2) {
+    const token = parts.pop()?.split(';').shift() || null;
+    return token ? decodeURIComponent(token) : null;
+  }
   return null;
 };
 
@@ -49,6 +60,9 @@ export const getRefreshTokenFromServerCookie = (request: Request): string | null
   if (!cookieHeader) return null;
   const value = `; ${cookieHeader}`;
   const parts = value.split(`; ${REFRESH_TOKEN_COOKIE_NAME}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  if (parts.length === 2) {
+    const refreshToken = parts.pop()?.split(';').shift() || null;
+    return refreshToken ? decodeURIComponent(refreshToken) : null;
+  }
   return null;
 };
